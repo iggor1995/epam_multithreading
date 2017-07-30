@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="MultiShips:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="Multi.war">
+      <element id="artifact" artifact-name="MultiShips:war exploded" />
+    </root>
+  </artifact>
+</component>
