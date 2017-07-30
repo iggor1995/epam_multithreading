@@ -10,9 +10,10 @@ import java.util.concurrent.Semaphore;
  */
 public class ShipCreator extends Thread {
     private static final String NEW_SHIP_CREATED = "new ship number %s has been CREATED -- %s. Load valude is %s \n";
-    private static final String PIER_INUSE = "%s pier %s is in use. PIER speed is %s \n";
+    private static final String PIER_INUSE = "ship number %s. %s pier %s is in use. PIER speed is %s \n";
     private static final String UNLOAD_STARTED = "ship number - %s STATUS -> UNLOADING\n";
     private static final String FINISHED = "ship number %s STATUS -> GONE!. Dock %s: Pier %s is free to use\n\n";
+    private static final int K = 400;
     final Semaphore semaphore = new Semaphore(2);
     private int number = 0;
     private RandomGenerator generator = new RandomGenerator();
@@ -41,55 +42,55 @@ public class ShipCreator extends Thread {
         System.out.printf(NEW_SHIP_CREATED, ship.getShipNumber(), ship.getType(), ship.getLoadValue());
         switch (ship.getSize()){
             case SMALL:
-                unloadingSmall(port.getSmallDock(), ship.getShipNumber());
+                unloadingSmall(port.getSmallDock(), ship.getShipNumber(), ship.getLoadValue());
                 people += ship.getLoadValue();
                 break;
             case MEDIUM:
-                unloadingMedium(port.getMediumDock(), ship.getShipNumber());
+                unloadingMedium(port.getMediumDock(), ship.getShipNumber(), ship.getLoadValue());
                 boxes += ship.getLoadValue();
                 break;
             case LARGE:
-                unloadingLarge(port.getLargeDock(), ship.getShipNumber());
+                unloadingLarge(port.getLargeDock(), ship.getShipNumber(), ship.getLoadValue());
                 containers += ship.getLoadValue();
                 break;
         }
     }
-    private void unloadingSmall(Dock dock, int number){
+    private void unloadingSmall(Dock dock, int number, int load){
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        unload(dock, number);
+        unload(dock, number, load);
         semaphore.release();
     }
-    private void unloadingMedium(Dock dock, int number){
+    private void unloadingMedium(Dock dock, int number, int load){
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        unload(dock, number);
+        unload(dock, number, load);
         semaphore.release();
 
     }
-    private void unloadingLarge(Dock dock, int number){
+    private void unloadingLarge(Dock dock, int number, int load){
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        unload(dock, number);
+        unload(dock, number, load);
         semaphore.release();
     }
-    private void unload(Dock dock, int number){
+    private void unload(Dock dock, int number, int load){
         for(Pier pier : dock.getPierList()) {
             if(!pier.isInUse()) {
                 pier.setInUse(true);
                 System.out.printf(UNLOAD_STARTED, number);
-                System.out.printf(PIER_INUSE, dock.toString(),  pier.getPierNum(), pier.getUnloadingSpeed());
+                System.out.printf(PIER_INUSE, number, dock.toString(),  pier.getPierNum(), pier.getUnloadingSpeed());
                 try {
-                    Thread.sleep(pier.getUnloadingSpeed() * 300);
+                    Thread.sleep(pier.getUnloadingSpeed() * K / load);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
